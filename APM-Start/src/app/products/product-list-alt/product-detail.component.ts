@@ -1,8 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { EMPTY, Observable, Subject } from 'rxjs';
-import { catchError, filter, map } from 'rxjs/operators';
+import { Component } from '@angular/core';
 import { Supplier } from 'src/app/suppliers/supplier';
-import { SupplierService } from 'src/app/suppliers/supplier.service';
 import { Product } from '../product';
 
 import { ProductService } from '../product.service';
@@ -12,12 +9,11 @@ import { ProductService } from '../product.service';
   templateUrl: './product-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductDetailComponent implements OnInit{
-  pageTitle$: Observable<string>;
-  private errorMessageSubject = new Subject<string>();
-  errorMessage$ = this.errorMessageSubject.asObservable();
-  selectedProduct$: Observable<Product>;
-  suppliers$: Observable<Supplier[]>;
+export class ProductDetailComponent {
+  pageTitle = 'Product Detail';
+  errorMessage = '';
+  product: Product | null = null;
+  productSuppliers: Supplier[] | null = null;
 
   constructor(private productService: ProductService) { }
 
