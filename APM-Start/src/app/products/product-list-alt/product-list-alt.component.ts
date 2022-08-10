@@ -13,28 +13,19 @@ import { ProductService } from '../product.service';
 })
 export class ProductListAltComponent implements OnInit, OnDestroy {
   pageTitle = 'Products';
-  private errorMessageSubject = new Subject<string>();
-  errorMessage$ = this.errorMessageSubject.asObservable();
-  selectedProductId: number;
+  errorMessage = '';
+  selectedProductId = 0;
 
-  products$:Observable<Product[]> ;
-  selectedProduct$:Observable<Product>;
-  sub: Subscription;
+  products: Product[] = [];
+  sub!: Subscription;
 
   constructor(private productService: ProductService) { }
 
   ngOnInit(): void {
-    this.products$ = this.productService.productsWithCategory$.pipe(
-      catchError(err => {
-        this.errorMessageSubject.next(err);
-        return EMPTY
-      })
-    )
-    this.selectedProduct$ =this.productService.selectedProduct$
-   /*  this.sub = this.productService.getProducts().subscribe(
-      products => this.products = products,
-      error => this.errorMessage = error
-    ); */
+    this.sub = this.productService.getProducts().subscribe({
+      next: products => this.products = products,
+      error: err => this.errorMessage = err
+    });
   }
 
   ngOnDestroy(): void {
