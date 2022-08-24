@@ -6,8 +6,7 @@ import { ProductService } from '../product.service';
 
 @Component({
   selector: 'pm-product-detail',
-  templateUrl: './product-detail.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './product-detail.component.html'
 })
 export class ProductDetailComponent {
   pageTitle = 'Product Detail';
@@ -17,23 +16,4 @@ export class ProductDetailComponent {
 
   constructor(private productService: ProductService) { }
 
-  ngOnInit(): void {
-    this.selectedProduct$ = this.productService.selectedProduct$.pipe(
-      catchError( err => {
-        this.errorMessageSubject.next(err);
-        return EMPTY;
-      })
-    )
-    this.suppliers$ = this.productService.selectedProductSuppliers2$.pipe(
-      catchError( err => {
-        this.errorMessageSubject.next(err);
-        return EMPTY;
-      })
-    )
-    this.pageTitle$ = this.selectedProduct$.pipe(
-      filter(selectedProduct => Boolean(selectedProduct)),
-      map(selectedProduct => selectedProduct.productName ? 
-        `Product Detail - ${selectedProduct.productName}`:'Product Detail')
-    )
-  }
 }
