@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { throwError, Observable } from 'rxjs';
 import { catchError, shareReplay } from 'rxjs/operators';
+import { ProductCategory } from './product-category';
 
 
 @Injectable({
@@ -11,7 +12,8 @@ import { catchError, shareReplay } from 'rxjs/operators';
 export class ProductCategoryService {
   private productCategoriesUrl = 'api/productCategories';
   
-  productCategories$ = this.http.get<ProductCategory[]>(this.productCategoriesUrl).pipe(
+  productCategories$ = this.http.get<ProductCategory[]>(this.productCategoriesUrl)
+  .pipe(
     shareReplay(1),
     catchError(this.handleError)
   )
