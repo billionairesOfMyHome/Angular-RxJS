@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/
 
 import { catchError, EMPTY, map, Observable, Subscription } from 'rxjs';
 import { ProductCategory } from '../product-categories/product-category';
+import { ProductCategoryService } from '../product-categories/product-category.service';
 
 import { Product } from './product';
 import { ProductService } from './product.service';
@@ -14,7 +15,7 @@ import { ProductService } from './product.service';
 export class ProductListComponent{
   pageTitle = 'Product List';
   errorMessage = '';
-  categories: ProductCategory[] = [];
+  // categories: ProductCategory[] = [];
   selectedCategoryId = 1;
 
   products$ = this.productService.productWithCategory$
@@ -25,13 +26,20 @@ export class ProductListComponent{
       })
   )
 
+  category$ = this.productCategoryService.productCategories$.pipe(
+    catchError(err=>{
+      this.errorMessage = err;
+      return EMPTY
+    })
+  )
+
   productsSimpleFilter$ = this.products$.pipe(
     map(products => 
       products.filter(product => this.selectedCategoryId ? product.categoryId === this.selectedCategoryId : true))
   )
   sub!: Subscription;
 
-  constructor(private productService: ProductService) { }
+  constructor(private productService: ProductService, private productCategoryService: ProductCategoryService) { }
 
   onAdd(): void {
     console.log('Not yet implemented');
