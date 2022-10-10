@@ -30,7 +30,7 @@ export class ProductListComponent{
   ) 
   */
   products$ = combineLatest([
-    this.productService.productWithCategory$,
+    this.productService.productsWithCategory$,
     this.categorySelectedAction$
     /* .pipe(
       startWith(0)
