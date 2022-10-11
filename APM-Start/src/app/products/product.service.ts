@@ -10,7 +10,7 @@ import { ProductCategoryService } from '../product-categories/product-category.s
   providedIn: 'root'
 })
 export class ProductService {
-  private productsUrl = 'api/products';
+  private productsUrl = 'api/product';
   private suppliersUrl = 'api/suppliers';
   private productSelectedSubject$ = new BehaviorSubject<number>(1);
   private productSelectedAction$ = this.productSelectedSubject$.asObservable();
