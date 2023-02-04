@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { catchError, combineLatest, map, Observable, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, Observable, tap, throwError } from 'rxjs';
 
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
@@ -12,6 +12,8 @@ import { ProductCategoryService } from '../product-categories/product-category.s
 export class ProductService {
   private productsUrl = 'api/products';
   private suppliersUrl = 'api/suppliers';
+  private productSelectedSubject$ = new BehaviorSubject<number>(1);
+  private productSelectedAction$ = this.productSelectedSubject$.asObservable();
 
   products$ = this.http.get<Product[]>(this.productsUrl)
     .pipe(
@@ -19,7 +21,7 @@ export class ProductService {
       catchError(this.handleError)
     );
 
-  productWithCategory$ = combineLatest([
+  productsWithCategory$ = combineLatest([
     this.products$, this.productCategoryService.productCategories$
   ]).pipe(
       map(([products, categories]) => 
@@ -31,6 +33,27 @@ export class ProductService {
           category: categories.find(c => c.id === product.categoryId)?.name
         }as Product)))
     )
+
+  /* selectedProduct$ = this.productWithCategory$
+    .pipe(
+     map((products) => products.find(product => product.id === 5)),
+     tap(product => console.log('selectedProduct:', product)
+     )
+    ) */
+
+  selectedProduct$ = combineLatest([
+    this.productsWithCategory$, 
+    this.productSelectedAction$])
+   .pipe(
+    map(([products,selectedProductId]) => 
+      products.find(product => product.id === selectedProductId)),
+    tap(product => console.log('selectedProduct:', product)
+    )
+   )
+
+   selectedProductChanged(selectedProductId: number){
+    this.productSelectedSubject$.next(selectedProductId);
+   }
   
   constructor(private http: HttpClient, private productCategoryService:ProductCategoryService) { }
 
