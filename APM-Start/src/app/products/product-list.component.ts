@@ -17,7 +17,7 @@ export class ProductListComponent{
   errorMessage = '';
   // categories: ProductCategory[] = [];
   // selectedCategoryId = 1;
-  private categorySelectedSubject = new BehaviorSubject<number>(0);
+  private categorySelectedSubject = new BehaviorSubject<number>(1);
   categorySelectedAction$ = this.categorySelectedSubject.asObservable();
 
   /* just data stream
