@@ -17,7 +17,7 @@ export class ProductListComponent{
   errorMessage = '';
   // categories: ProductCategory[] = [];
   // selectedCategoryId = 1;
-  private categorySelectedSubject = new BehaviorSubject<number>(1);
+  private categorySelectedSubject = new BehaviorSubject<number>(0);
   categorySelectedAction$ = this.categorySelectedSubject.asObservable();
 
   /* just data stream
@@ -30,7 +30,8 @@ export class ProductListComponent{
   ) 
   */
   products$ = combineLatest([
-    this.productService.productsWithCategory$,
+    // this.productService.productsWithCategory$,
+    this.productService.productsWithAdd$,
     this.categorySelectedAction$
     /* .pipe(
       startWith(0)
@@ -63,7 +64,8 @@ export class ProductListComponent{
   constructor(private productService: ProductService, private productCategoryService: ProductCategoryService) { }
 
   onAdd(): void {
-    console.log('Not yet implemented');
+    this.productService.addProduct();
+    // console.log('Not yet implemented');
   }
 
   onSelected(categoryId: string): void {

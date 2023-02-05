@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { BehaviorSubject, catchError, combineLatest, map, Observable, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, merge, Observable, scan, Subject, tap, throwError } from 'rxjs';
 
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
@@ -12,8 +12,10 @@ import { ProductCategoryService } from '../product-categories/product-category.s
 export class ProductService {
   private productsUrl = 'api/products';
   private suppliersUrl = 'api/suppliers';
-  private productSelectedSubject$ = new BehaviorSubject<number>(1);
-  private productSelectedAction$ = this.productSelectedSubject$.asObservable();
+  private productSelectedSubject = new BehaviorSubject<number>(1);
+  private productSelectedAction$ = this.productSelectedSubject.asObservable();
+  private productInsertedSubject = new Subject<Product>();
+  productInsertedAction$ = this.productInsertedSubject.asObservable();
 
   products$ = this.http.get<Product[]>(this.productsUrl)
     .pipe(
@@ -52,7 +54,21 @@ export class ProductService {
    )
 
    selectedProductChanged(selectedProductId: number){
-    this.productSelectedSubject$.next(selectedProductId);
+    this.productSelectedSubject.next(selectedProductId);
+   }
+
+  productsWithAdd$ = merge(
+    this.productsWithCategory$, 
+    this.productInsertedAction$
+  ).pipe(
+      scan((acc, value) => 
+        (value instanceof Array) ? [...value] : [...acc, value], [] as Product[])
+    )
+
+
+   addProduct(newProduct?: Product){
+    newProduct = newProduct || this.fakeProduct()
+    this.productInsertedSubject.next(newProduct)
    }
   
   constructor(private http: HttpClient, private productCategoryService:ProductCategoryService) { }
@@ -65,7 +81,7 @@ export class ProductService {
       description: 'Our new product',
       price: 8.9,
       categoryId: 3,
-      // category: 'Toolbox',
+      category: 'Toolbox',
       quantityInStock: 30
     };
   }
